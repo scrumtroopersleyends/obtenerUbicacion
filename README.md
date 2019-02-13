@@ -1,2 +1,2 @@
-# base-java-project
-Base Java Micro-service Project
+# location
+Location Java Micro-service Project
