@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/base-java-project
+    docker:
+      - image: circleci/openjdk:11-jdk-browsers
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: base-java-project-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline # gets the project dependencies
+
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: base-java-project-{{ checksum "pom.xml" }}
+
+      - run: mvn package # run the actual tests
+
+      - run: mvn sonar:sonar -Dsonar.projectKey=scrumtroopersleyends_base-java-project -Dsonar.organization=scrumtroopersleyends -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=e8b19434aaca45d4f944c343ec2ef77c35d3ddca
+
+      - store_test_results:
+          path: target/surefire-reports
+
+      - store_artifacts:
+          path: target/location.jar
